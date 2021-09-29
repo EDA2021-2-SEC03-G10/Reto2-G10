@@ -39,11 +39,53 @@ los mismos.
 
 # Construccion de modelos
 
+def newCatalog():
+    catalog = {'obras': None,
+               'artistas': None,
+               "Medium": None}
+
+    catalog['obras'] = lt.newList()
+    catalog['artistas'] = lt.newList()
+
+    catalog['Medium'] = mp.newMap(120,
+    maptype='CHAINING',
+    loadfactor=0.5,)
+
+    return catalog
+
+
 # Funciones para agregar informacion al catalogo
+
+def addObra(catalog, obra):
+    lt.addLast(catalog['obras'], obra)
+    mp.put(catalog["Medium"],obra["ObjectID"],obra["Medium"])
+    print((mp.get(catalog["Medium"],obra["ObjectID"])))
+    print("\n")
+
+def addArtist(catalog, artista):
+    lt.addLast(catalog['artistas'], artista)
+
+
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
+
+def obrasAntiguas(catalog, medio, n):
+    masAntigua = 9999
+    obraAntigua = None
+    idMasAntiguas = lt.newList()
+    obrasMasAntiguas = lt.newList()
+    for i in range(0,n):
+        for obra in lt.iterator(catalog['obras']):
+            valor = mp.get(catalog["Medium"],obra["ObjectID"])["value"]
+            if valor == medio and int(obra["Date"]) < masAntigua and not(lt.isPresent(idMasAntiguas,obra["ObjectID"])):
+                masAntigua = int(obra["Date"])
+                obraAntigua = obra
+        lt.addLast(obrasMasAntiguas,obraAntigua)
+        lt.addLast(idMasAntiguas,obra["ObjectID"])
+
+    return obrasMasAntiguas
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
