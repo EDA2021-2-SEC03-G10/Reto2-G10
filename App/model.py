@@ -59,8 +59,6 @@ def newCatalog():
 def addObra(catalog, obra):
     lt.addLast(catalog['obras'], obra)
     mp.put(catalog["Medium"],obra["ObjectID"],obra["Medium"])
-    print((mp.get(catalog["Medium"],obra["ObjectID"])))
-    print("\n")
 
 def addArtist(catalog, artista):
     lt.addLast(catalog['artistas'], artista)
@@ -86,6 +84,24 @@ def obrasAntiguas(catalog, medio, n):
         lt.addLast(idMasAntiguas,obra["ObjectID"])
 
     return obrasMasAntiguas
+
+def listarCronologicamente(catalog, añoInicial, añoFinal):
+    mapEnRango = mp.newMap(9000, maptype='CHAINING',loadfactor=0.5)
+    for artista in lt.iterator(catalog["artistas"]):
+        if int(artista["BeginDate"]) >= añoInicial and int(artista["BeginDate"]) <= añoFinal:
+            mp.put(mapEnRango,artista["DisplayName"],artista)
+
+    mapFinal = mp.newMap(9000, maptype='CHAINING',loadfactor=0.5)
+
+    indice = 0
+
+    for i in range(añoInicial,añoFinal+1):
+        for elemento in lt.iterator(mp.valueSet(mapEnRango)):
+            if int(elemento["BeginDate"]) == i:
+              mp.put(mapFinal,indice,elemento)
+              indice += 1
+
+    return mapFinal
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

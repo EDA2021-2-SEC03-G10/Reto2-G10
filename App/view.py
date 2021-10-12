@@ -24,6 +24,7 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
 assert cf
 
 
@@ -35,9 +36,21 @@ operación solicitada
 """
 
 def printMenu():
+    print(chr(27)+"[1;32m")
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- las n obras más antiguas para un medio específico")
+    print(chr(27)+"[0;37m")
+    print(chr(27)+"[4;32m"+"1" + chr(27)+ "[0;37m" + "- Cargar información en el catálogo")
+
+    # Funciones de los laboratorios
+    print(chr(27)+"[4;32m"+"2" + chr(27)+ "[0;37m" + "- las n obras más antiguas para un medio específico")
+    print(chr(27)+"[4;32m"+"3" + chr(27)+ "[0;37m" + "- número total de obras de una nacionalidad")
+
+    # Requisitos
+    print(chr(27)+"[4;32m"+ "4" + chr(27)+ "[0;37m" + "- Listar cronológicamente los artistas (Requisito 1)")
+    print(chr(27)+"[4;32m"+ "5" + chr(27)+ "[0;37m" + "- Listar cronologicamente las adquisiciones (Requisito 2)")
+    print(chr(27)+"[4;32m"+ "6" + chr(27)+ "[0;37m" + "- Clasificar las obras de un artista por tecnica (Requisito 3)")
+    print(chr(27)+"[4;32m"+ "7" + chr(27)+ "[0;37m" + "- Clasificar las obras por la nacionalidad de sus creadores (Requisito 4)")
+    print(chr(27)+"[4;32m"+ "8" + chr(27)+ "[0;37m" + "- Transportar obras de un departamento (Requisito 5)")
 
 def initCatalog():
     return controller.initCatalog()
@@ -47,6 +60,22 @@ def loadData(catalog):
 
 def obrasAntiguas(catalog, medio, n):
     return controller.obrasAntiguas(catalog, medio, n)
+
+# Requisito 1
+def listarCronologicamente(catalog, añoInicial, añoFinal):
+    return controller.listarCronologicamente(catalog, añoInicial, añoFinal)
+
+# Requisito 2
+def listarAdquisiciones(catalog, fechaInicial, fechaFinal):
+    pass
+
+# Requisito 4
+def nacionalidadCreadores(catalog):
+    pass
+
+# Requisito 5
+def transportar_obras(catalog,departamento):
+    pass
 
 catalog = None
 
@@ -72,6 +101,49 @@ while True:
         for obra in lt.iterator(listaObras):
             print(obra)
             print("\n")
+
+    elif int(inputs[0]) == 3:
+        pass
+
+    elif int(inputs[0]) == 4:
+        añoInicial = int(input("Ingrese el año inicial(yyyy): "))
+        añoFinal = int(input("Ingrese el año final(yyyy): "))
+        print("Listando los artistas de manera cronologica ....")
+        
+        mapEnRango = listarCronologicamente(catalog, añoInicial, añoFinal)
+        tamaño = mp.size(mapEnRango)
+        print("\n")
+        print("Numero de artistas dentro del rango: " + str(tamaño)+"\n")
+
+        artista1 = mp.get(mapEnRango,0)
+        artista2 = mp.get(mapEnRango,1)
+        artista3 = mp.get(mapEnRango,2)
+        artista4 = mp.get(mapEnRango,tamaño-3)
+        artista5 = mp.get(mapEnRango,tamaño-2)
+        artista6 = mp.get(mapEnRango,tamaño-1)
+
+        artistas = artista1,artista2,artista3,artista4,artista5,artista6
+
+        for artista in artistas:
+            info = artista['value']
+            print(chr(27)+"[1;34m"+ "Nombre: " + chr(27)+"[0;37m"+ info["DisplayName"],
+                    chr(27)+"[1;34m"+ ", Nacimiento: "+ chr(27)+"[0;37m"+ info["BeginDate"], 
+                    chr(27)+"[1;34m"+ ", Fallecimmiento: " + chr(27)+"[0;37m"+ info["EndDate"],
+                    chr(27)+"[1;34m"+ ", Nacionalidad: " + chr(27)+"[0;37m"+ info["Nationality"],
+                    chr(27)+"[1;34m"+ ", Genero: " + chr(27)+"[0;37m"+ info["Gender"])
+
+    elif int(inputs[0]) == 5:
+        pass
+
+    elif int(inputs[0]) == 6:
+        pass
+
+    elif int(inputs[0]) == 7:
+        pass
+
+    elif int(inputs[0]) == 8:
+        pass
+
     else:
         sys.exit(0)
 sys.exit(0)

@@ -59,3 +59,7 @@ def obrasAntiguas(catalog, medio, n):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def listarCronologicamente(catalog, añoInicial, añoFinal):
+    listaEnRango = model.listarCronologicamente(catalog, añoInicial, añoFinal)
+    return listaEnRango
