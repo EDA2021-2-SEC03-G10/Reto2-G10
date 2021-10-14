@@ -111,7 +111,7 @@ while True:
         print("La cantidad de obras de la nacionalidad dada es: " + str(cantidad))
 
     elif int(inputs[0]) == 4:
-        añoInicial = int(input("Ingrese el año inicial(yyyy): "))
+        añoInicial = int(input("Ingrese el año inicial(yyyy): ")) 
         añoFinal = int(input("Ingrese el año final(yyyy): "))
         print("Listando los artistas de manera cronologica ....")
         
