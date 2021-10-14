@@ -48,8 +48,12 @@ def newCatalog():
     catalog['artistas'] = lt.newList()
 
     catalog['Medium'] = mp.newMap(120,
-    maptype='CHAINING',
-    loadfactor=0.5,)
+    maptype='PROBING',
+    loadfactor=0.20,)
+
+    catalog['Nationality'] = mp.newMap(160,
+    maptype='PROBING',
+    loadfactor=0.20)
 
     return catalog
 
@@ -77,9 +81,10 @@ def obrasAntiguas(catalog, medio, n):
     for i in range(0,n):
         for obra in lt.iterator(catalog['obras']):
             valor = mp.get(catalog["Medium"],obra["ObjectID"])["value"]
-            if valor == medio and int(obra["Date"]) < masAntigua and not(lt.isPresent(idMasAntiguas,obra["ObjectID"])):
-                masAntigua = int(obra["Date"])
-                obraAntigua = obra
+            if obra["Date"] != "":
+                if valor == medio and int(obra["Date"]) < masAntigua and not(lt.isPresent(idMasAntiguas,obra["ObjectID"])):
+                    masAntigua = int(obra["Date"])
+                    obraAntigua = obra
         lt.addLast(obrasMasAntiguas,obraAntigua)
         lt.addLast(idMasAntiguas,obra["ObjectID"])
 
@@ -103,6 +108,22 @@ def listarCronologicamente(catalog, añoInicial, añoFinal):
 
     return mapFinal
 
+def numeroObras(catalog, nacion):
+    info = mp.newMap(4000, maptype='CHAINING', loadfactor=0.5,)
+    for artista in lt.iterator(catalog["artistas"]):
+        if not (mp.contains(catalog['Nationality'],artista["Nationality"])):
+            mp.put(catalog['Nationality'],artista["Nationality"],0)
+        mp.put(info,artista["ConstituentID"], artista["Nationality"])
+
+    for obra in lt.iterator(catalog["obras"]):
+        for id in obra["ConstituentID"].split(", "):
+            id = id.replace("[","")
+            id = id.replace("]","")
+            if mp.get(info,id) != None:
+                pais = (mp.get(info,id))["value"]
+                nuevoValor = int((mp.get(catalog['Nationality'],pais))["value"]) + 1
+                mp.put(catalog['Nationality'],pais,nuevoValor)
+    return mp.get(catalog['Nationality'],nacion)
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento

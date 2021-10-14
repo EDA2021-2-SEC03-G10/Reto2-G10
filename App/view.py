@@ -61,6 +61,9 @@ def loadData(catalog):
 def obrasAntiguas(catalog, medio, n):
     return controller.obrasAntiguas(catalog, medio, n)
 
+def numeroObras(catalog,nacion):
+    return controller.numeroObras(catalog,nacion)
+
 # Requisito 1
 def listarCronologicamente(catalog, añoInicial, añoFinal):
     return controller.listarCronologicamente(catalog, añoInicial, añoFinal)
@@ -103,7 +106,9 @@ while True:
             print("\n")
 
     elif int(inputs[0]) == 3:
-        pass
+        nacion = input("Escriba la nacionalidad: ")
+        cantidad = numeroObras(catalog,nacion)["value"]
+        print("La cantidad de obras de la nacionalidad dada es: " + str(cantidad))
 
     elif int(inputs[0]) == 4:
         añoInicial = int(input("Ingrese el año inicial(yyyy): "))
