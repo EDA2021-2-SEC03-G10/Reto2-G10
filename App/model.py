@@ -144,7 +144,7 @@ def nacionalidadCreadores(catalog):
 
 # Funciones de ordenamiento
 def sortpaises(dict):
-    lista = lt.newList("ARRAY_LIST")
+    map = mp.newMap(10, maptype='CHAINING',loadfactor=1)
     for i in range(0,10):
         mayor = -1
         llaveMayor = ""
@@ -154,15 +154,15 @@ def sortpaises(dict):
                 if valor > mayor:
                     mayor = valor
                     llaveMayor = llave 
-        lt.addLast(lista,{llaveMayor: mayor})
+        mp.put(map,i,[llaveMayor,mayor])
         mp.remove(dict,llaveMayor)
-    return lista
+    return map
 
 
-def obrasPais(catalog,info,lista):
-    for i in (lt.getElement(lista, 1)).keys():
-       pais = i
-    listaFinal = lt.newList()
+def obrasPais(catalog,info,map):
+    pais = (mp.get(map,0))["value"][0]
+    mapFinal = mp.newMap(900, maptype='CHAINING',loadfactor=1)
+    contador = 0
     for obra in lt.iterator(catalog["obras"]):
         condicion = False
         for id in obra["ConstituentID"].split(", "):
@@ -174,5 +174,6 @@ def obrasPais(catalog,info,lista):
             formatoObra =  {"Titulo":obra["Title"] ,"Artistas":(mp.get(info,id))["value"][1],
             "Fecha":obra["Date"],"Medio":obra["Medium"],
             "Dimensiones":obra["Dimensions"]} 
-            lt.addLast(listaFinal,formatoObra)   
-    return listaFinal
+            mp.put(mapFinal,contador,formatoObra)
+            contador += 1   
+    return mapFinal

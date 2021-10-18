@@ -148,26 +148,27 @@ while True:
        print(chr(27)+"[1;44m"+"NACIONALIDADES CON EL MAYOR NUMERO DE OBRAS"+chr(27)+"[0;37m")
        print("\n")
 
-       for pais in lt.iterator(clasificacion): 
-           for llave in pais.keys():
-               print(chr(27)+"[1;34m"+llave+"   "+chr(27)+"[0;37m"+str(pais[llave]))
-               print("\n")
+       for posicion in range(0,10):
+            pais = (mp.get(clasificacion, posicion))["value"][0]
+            conteo = (mp.get(clasificacion, posicion))["value"][1]
+            print(chr(27)+"[1;34m"+pais+"   "+chr(27)+"[0;37m"+ str(conteo))
+            print("\n")
 
        print(chr(27)+"[1;44m"+"INFORMACION DE LAS 3 PRIMERAS Y DE LAS 3 ULTIMAS OBRAS DE LA NACIONALIDAD CON EL MAYOR NUMERO DE OBRAS"+chr(27)+"[0;37m")
-       tamaño = lt.size(obras)
+       tamaño = mp.size(obras)
 
-       obra1 = lt.getElement(obras, 1)
-       obra2 = lt.getElement(obras, 2)
-       obra3 = lt.getElement(obras, 3)
-       obra4 = lt.getElement(obras, tamaño-2)
-       obra5 = lt.getElement(obras, tamaño-1)
-       obra6 = lt.getElement(obras, tamaño)
+       obra1 = mp.get(obras, 0)["value"]
+       obra2 = mp.get(obras, 1)["value"]
+       obra3 = mp.get(obras, 2)["value"]
+       obra4 = mp.get(obras, tamaño-3)["value"]
+       obra5 = mp.get(obras, tamaño-2)["value"]
+       obra6 = mp.get(obras, tamaño-1)["value"]
 
        obrasFinales = obra1,obra2,obra3,obra4,obra5,obra6
 
        for obra in obrasFinales: 
            print("\n")
-           for llave2 in obra.keys():
+           for llave2 in obra:
                print(chr(27)+"[1;34m"+llave2+": "+chr(27)+"[0;37m"+obra[llave2])
 
 
