@@ -139,6 +139,12 @@ def nacionalidadCreadores(catalog):
                 pais = (mp.get(info,id))["value"][0]
                 nuevoValor = int((mp.get(catalog['Nationality'],pais))["value"]) + 1
                 mp.put(catalog['Nationality'],pais,nuevoValor)
+
+    paisSinNombre = (mp.get(catalog['Nationality'], ""))["value"]
+    paisDesconocido = (mp.get(catalog['Nationality'],"Nationality unknown"))["value"]
+    mp.put(catalog['Nationality'],"Nationality unknown",paisSinNombre + paisDesconocido)
+    mp.remove(catalog['Nationality'],"")
+
     return catalog['Nationality'],info
 # Funciones utilizadas para comparar elementos dentro de una lista
 
