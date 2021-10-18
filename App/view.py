@@ -74,7 +74,7 @@ def listarAdquisiciones(catalog, fechaInicial, fechaFinal):
 
 # Requisito 4
 def nacionalidadCreadores(catalog):
-    pass
+    return controller.nacionalidadCreadores(catalog)
 
 # Requisito 5
 def transportar_obras(catalog,departamento):
@@ -144,7 +144,32 @@ while True:
         pass
 
     elif int(inputs[0]) == 7:
-        pass
+       clasificacion,obras = nacionalidadCreadores(catalog)
+       print(chr(27)+"[1;44m"+"NACIONALIDADES CON EL MAYOR NUMERO DE OBRAS"+chr(27)+"[0;37m")
+       print("\n")
+
+       for pais in lt.iterator(clasificacion): 
+           for llave in pais.keys():
+               print(chr(27)+"[1;34m"+llave+"   "+chr(27)+"[0;37m"+str(pais[llave]))
+               print("\n")
+
+       print(chr(27)+"[1;44m"+"INFORMACION DE LAS 3 PRIMERAS Y DE LAS 3 ULTIMAS OBRAS DE LA NACIONALIDAD CON EL MAYOR NUMERO DE OBRAS"+chr(27)+"[0;37m")
+       tamaño = lt.size(obras)
+
+       obra1 = lt.getElement(obras, 1)
+       obra2 = lt.getElement(obras, 2)
+       obra3 = lt.getElement(obras, 3)
+       obra4 = lt.getElement(obras, tamaño-2)
+       obra5 = lt.getElement(obras, tamaño-1)
+       obra6 = lt.getElement(obras, tamaño)
+
+       obrasFinales = obra1,obra2,obra3,obra4,obra5,obra6
+
+       for obra in obrasFinales: 
+           print("\n")
+           for llave2 in obra.keys():
+               print(chr(27)+"[1;34m"+llave2+": "+chr(27)+"[0;37m"+obra[llave2])
+
 
     elif int(inputs[0]) == 8:
         pass

@@ -42,19 +42,16 @@ def loadData(catalog):
     loadArtistas(catalog)
 
 def loadObras(catalog):
-    ObrasFile = cf.data_dir + 'MoMA/Artworks-utf8-large.csv'
+    ObrasFile = cf.data_dir + 'MoMA/Artworks-utf8-small.csv'
     input_file = csv.DictReader(open(ObrasFile, encoding='utf-8'))
     for obra in input_file:
         model.addObra(catalog, obra)
 
 def loadArtistas(catalog):
-    artistasFile = cf.data_dir + 'MoMA/Artists-utf8-large.csv'
+    artistasFile = cf.data_dir + 'MoMA/Artists-utf8-small.csv'
     input_file = csv.DictReader(open(artistasFile, encoding='utf-8'))
     for artista in input_file:
         model.addArtist(catalog, artista)
-
-def obrasAntiguas(catalog, medio, n):
-    return model.obrasAntiguas(catalog, medio, n)
 
 # Funciones de ordenamiento
 
@@ -64,5 +61,19 @@ def listarCronologicamente(catalog, añoInicial, añoFinal):
     listaEnRango = model.listarCronologicamente(catalog, añoInicial, añoFinal)
     return listaEnRango
 
+def obrasAntiguas(catalog, medio, n):
+    return model.obrasAntiguas(catalog, medio, n)
+
 def numeroObras(catalog,nacion):
     return model.numeroObras(catalog,nacion)
+
+def nacionalidadCreadores(catalog):
+    dictnacionalidades,info = model.nacionalidadCreadores(catalog)
+    clasificacion = model.sortpaises(dictnacionalidades) 
+    obras = model.obrasPais(catalog,info,clasificacion)
+    return clasificacion, obras
+
+
+
+
+

@@ -90,24 +90,6 @@ def obrasAntiguas(catalog, medio, n):
 
     return obrasMasAntiguas
 
-def listarCronologicamente(catalog, añoInicial, añoFinal):
-    mapEnRango = mp.newMap(9000, maptype='CHAINING',loadfactor=0.5)
-    for artista in lt.iterator(catalog["artistas"]):
-        if int(artista["BeginDate"]) >= añoInicial and int(artista["BeginDate"]) <= añoFinal:
-            mp.put(mapEnRango,artista["DisplayName"],artista)
-
-    mapFinal = mp.newMap(9000, maptype='CHAINING',loadfactor=0.5)
-
-    indice = 0
-
-    for i in range(añoInicial,añoFinal+1):
-        for elemento in lt.iterator(mp.valueSet(mapEnRango)):
-            if int(elemento["BeginDate"]) == i:
-              mp.put(mapFinal,indice,elemento)
-              indice += 1
-
-    return mapFinal
-
 def numeroObras(catalog, nacion):
     info = mp.newMap(4000, maptype='CHAINING', loadfactor=0.5,)
     for artista in lt.iterator(catalog["artistas"]):
@@ -124,6 +106,73 @@ def numeroObras(catalog, nacion):
                 nuevoValor = int((mp.get(catalog['Nationality'],pais))["value"]) + 1
                 mp.put(catalog['Nationality'],pais,nuevoValor)
     return mp.get(catalog['Nationality'],nacion)
+
+def listarCronologicamente(catalog, añoInicial, añoFinal):
+    mapEnRango = mp.newMap(900, maptype='CHAINING',loadfactor=1)
+    for artista in lt.iterator(catalog["artistas"]):
+        if int(artista["BeginDate"]) >= añoInicial and int(artista["BeginDate"]) <= añoFinal:
+            mp.put(mapEnRango,artista["DisplayName"],artista)
+
+    mapFinal = mp.newMap(900, maptype='CHAINING',loadfactor=1)
+    indice = 0
+
+    for i in range(añoInicial,añoFinal+1):
+        for elemento in lt.iterator(mp.valueSet(mapEnRango)):
+            if int(elemento["BeginDate"]) == i:
+              mp.put(mapFinal,indice,elemento)
+              indice += 1
+
+    return mapFinal
+
+def nacionalidadCreadores(catalog):
+    info = mp.newMap(4000, maptype='CHAINING', loadfactor=0.5,)
+    for artista in lt.iterator(catalog["artistas"]):
+        if not (mp.contains(catalog['Nationality'],artista["Nationality"])):
+            mp.put(catalog['Nationality'],artista["Nationality"],0)
+        mp.put(info,artista["ConstituentID"], [artista["Nationality"],artista["DisplayName"]])
+
+    for obra in lt.iterator(catalog["obras"]):
+        for id in obra["ConstituentID"].split(", "):
+            id = id.replace("[","")
+            id = id.replace("]","")
+            if mp.get(info,id) != None:
+                pais = (mp.get(info,id))["value"][0]
+                nuevoValor = int((mp.get(catalog['Nationality'],pais))["value"]) + 1
+                mp.put(catalog['Nationality'],pais,nuevoValor)
+    return catalog['Nationality'],info
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+def sortpaises(dict):
+    lista = lt.newList("ARRAY_LIST")
+    for i in range(0,10):
+        mayor = -1
+        llaveMayor = ""
+        for llave in lt.iterator(mp.keySet(dict)):
+           if mp.get(dict,llave) != None:
+                valor = mp.get(dict,llave)["value"]
+                if valor > mayor:
+                    mayor = valor
+                    llaveMayor = llave 
+        lt.addLast(lista,{llaveMayor: mayor})
+        mp.remove(dict,llaveMayor)
+    return lista
+
+
+def obrasPais(catalog,info,lista):
+    for i in (lt.getElement(lista, 1)).keys():
+       pais = i
+    listaFinal = lt.newList()
+    for obra in lt.iterator(catalog["obras"]):
+        condicion = False
+        for id in obra["ConstituentID"].split(", "):
+            id = id.replace("[","")
+            id = id.replace("]","")
+            if pais == (mp.get(info,id))["value"][0]:
+                condicion = True
+        if condicion: 
+            formatoObra =  {"Titulo":obra["Title"] ,"Artistas":(mp.get(info,id))["value"][1],
+            "Fecha":obra["Date"],"Medio":obra["Medium"],
+            "Dimensiones":obra["Dimensions"]} 
+            lt.addLast(listaFinal,formatoObra)   
+    return listaFinal
