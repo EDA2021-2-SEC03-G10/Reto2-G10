@@ -124,7 +124,7 @@ def listarCronologicamente(catalog, añoInicial, añoFinal):
 
     return mapFinal
    
- def listarAdquisiciones(catalog, fechaInical, fechaFinal):
+def listarAdquisiciones(catalog, fechaInical, fechaFinal):
     mapFecha = mp.newMap(900, maptype='CHAINING',loadfactor=1)
     compra=0
     for obra in lt.iterator(catalog['obras']):
@@ -223,7 +223,7 @@ def obrasPais(catalog,info,map):
             contador += 1   
     return mapFinal
    
-   def transportar_obras(catalog,departamento):
+def transportar_obras(catalog,departamento):
     count = 0
     peso = 0
     Precio_total= 0
