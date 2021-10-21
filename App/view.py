@@ -70,7 +70,11 @@ def listarCronologicamente(catalog, añoInicial, añoFinal):
 
 # Requisito 2
 def listarAdquisiciones(catalog, fechaInicial, fechaFinal):
-    pass
+    return controller.listarAdquisiciones(catalog, fechaInicial, fechaFinal)
+ 
+# Requisito 3
+def clasificar_tecnicas(catalog,nombre):
+    return controller.clasificar_tecnicas(catalog,nombre)
 
 # Requisito 4
 def nacionalidadCreadores(catalog):
@@ -78,7 +82,7 @@ def nacionalidadCreadores(catalog):
 
 # Requisito 5
 def transportar_obras(catalog,departamento):
-    pass
+    return controller.transportar_obras(catalog,departamento)
 
 catalog = None
 
@@ -138,10 +142,63 @@ while True:
                     chr(27)+"[1;34m"+ ", Genero: " + chr(27)+"[0;37m"+ info["Gender"])
 
     elif int(inputs[0]) == 5:
-        pass
+        fechaInicial = (input("Ingrese la fecha inicial(yyyy-mm-dd): "))
+        año, mes, día = map(int, fechaInicial.split('-'))
+        fechaInicial= (año, mes, día)
+        fechaFinal = (input("Ingrese el año final(yyyy-mm-dd): "))
+        año2, mes2, día2 = map(int, fechaFinal.split('-'))
+        fechaFinal= (año2, mes2, día2)
+        print("Listando las adquisiciones de manera cronologica ....")
+        mapFechas,compras = listarAdquisiciones(catalog, fechaInicial, fechaFinal)
+        tamaño = mp.size(mapFechas)
+        print("\n")
+        print("Numero de obras dentro del rango: " + str(tamaño)+"\n")
+        print("Número total de obras adquiridas por compra " + str(compras)+"\n")
+
+        obra1 = mp.get(mapFechas, 0)
+        obra2 = mp.get(mapFechas, 1)
+        obra3 = mp.get(mapFechas, 2)
+        obra4 = mp.get(mapFechas, tamaño-3)
+        obra5 = mp.get(mapFechas, tamaño-2)
+        obra6 = mp.get(mapFechas, tamaño-1)
+
+        print(chr(27)+"[1;37m"+"Las primeras y las últimas 3 obras son: "+chr(27)+"[0;37m")
+        print("\n")
+
+        obras = obra1,obra2,obra3,obra4,obra5,obra6
+
+        for obra in obras:
+            datos = obra['value']
+            print(chr(27)+"[1;34m"+"Título: " + chr(27)+"[0;37m"+ datos["Title"],
+                    chr(27)+"[1;34m"+", Fecha: " + chr(27)+"[0;37m"+ datos["Date"],
+                    chr(27)+"[1;34m"+", Medio: " + chr(27)+"[0;37m"+ datos["Medium"],
+                    chr(27)+"[1;34m"+", Dimensiones: " + chr(27)+"[0;37m"+ datos["Dimensions"])
+            print("\n")
 
     elif int(inputs[0]) == 6:
-        pass
+        nombre = str(input("Ingrese el nombre del artista: "))
+        tecnicas = clasificar_tecnicas(catalog,nombre)
+        tamaño = mp.size(tecnicas)
+        print("Numero de obras dentro del rango: " + str(tamaño)+"\n")
+        obra1 = mp.get(tecnicas, 0)
+        obra2 = mp.get(tecnicas, 1)
+        obra3 = mp.get(tecnicas, 2)
+        obra4 = mp.get(tecnicas, tamaño-3)
+        obra5 = mp.get(tecnicas, tamaño-2)
+        obra6 = mp.get(tecnicas, tamaño-1)
+
+        print(chr(27)+"[1;37m"+"Las primeras y las últimas 3 obras por técnica son: "+chr(27)+"[0;37m")
+        print("\n")
+
+        obras = obra1,obra2,obra3,obra4,obra5,obra6
+
+        for obra in obras:
+            datosObra = obra["value"]
+            print(chr(27)+"[1;34m"+"Título: " + chr(27)+"[0;37m"+ datosObra["Title"],
+                    chr(27)+"[1;34m"+", Fecha: " + chr(27)+"[0;37m"+ datosObra["Date"],
+                    chr(27)+"[1;34m"+", Medio: " + chr(27)+"[0;37m"+ datosObra["Medium"],
+                    chr(27)+"[1;34m"+", Dimensiones: " + chr(27)+"[0;37m"+ datosObra["Dimensions"])
+            print("\n")
 
     elif int(inputs[0]) == 7:
        clasificacion,obras = nacionalidadCreadores(catalog)
@@ -173,7 +230,37 @@ while True:
 
 
     elif int(inputs[0]) == 8:
-        pass
+        departamento = (input("Ingrese el departamento a transportar las obras: "))
+        obras_antigüedad,count,peso,precio,precio_total, obras_caras,Precio_caras, Precio_antiguas = transportar_obras(catalog,departamento)
+        print("El número de obras a transportar es: " + str(count))
+        print("Peso estimado de las obras: " + str(peso))
+        print ("Estimado en USD del precio del servicio: " +str(precio_total)+ "USD")
+        print( chr(27)+"[1;44m"+ "Las 5 obras más antiguas son: "+chr(27)+"[0;37m")
+        print("\n")
+        conteo1 = 1
+        for obra_antigua in lt.iterator(obras_antigüedad):
+            print(chr(27)+"[1;34m" + "Título: " + chr(27)+"[0;37m"+ str(obra_antigua["Title"]))
+            print(chr(27)+"[1;34m" + "Artistas: " + chr(27)+"[0;37m"+ str(obra_antigua["ConstituentID"]))
+            print(chr(27)+"[1;34m" + "Clasificación: " +chr(27)+"[0;37m"+ str(obra_antigua["Classification"]))
+            print(chr(27)+"[1;34m" + "Fecha: " +chr(27)+"[0;37m"+ str(obra_antigua["Date"]))
+            print(chr(27)+"[1;34m" + "Medio: " + chr(27)+"[0;37m"+ str(obra_antigua["Medium"]))
+            print(chr(27)+"[1;34m" + "Dimensiones: " +chr(27)+"[0;37m"+ str(obra_antigua["Dimensions"]))
+            print(chr(27)+"[1;34m" + "Precio: " +chr(27)+"[0;37m"+ str(lt.getElement(Precio_antiguas,conteo1)))
+            conteo1 +=1
+            print("\n")
+        print( chr(27)+"[1;44m"+"Las 5 obras más costosas a transportar son: "+chr(27)+"[0;37m")
+        print("\n")
+        conteo2=1
+        for obra_costosa in lt.iterator(obras_caras):
+            print(chr(27)+"[1;34m" + "Título: " + chr(27)+"[0;37m"+ str(obra_costosa["Title"]))
+            print(chr(27)+"[1;34m" + "Artistas: " + chr(27)+"[0;37m"+ str(obra_costosa["ConstituentID"]))
+            print(chr(27)+"[1;34m" + "Clasificación: " + chr(27)+"[0;37m"+ str(obra_costosa["Classification"]))
+            print(chr(27)+"[1;34m" + "Fecha: " +chr(27)+"[0;37m"+ str(obra_costosa["Date"]))
+            print(chr(27)+"[1;34m" + "Medio: " + chr(27)+"[0;37m"+ str(obra_costosa["Medium"]))
+            print(chr(27)+"[1;34m" + "Dimensiones: " + chr(27)+"[0;37m"+ str(obra_costosa["Dimensions"]))
+            print(chr(27)+"[1;34m" + "Precio: " + chr(27)+"[0;37m"+ str(lt.getElement(Precio_caras,conteo2)))
+            conteo2 +=1
+            print("\n")
 
     else:
         sys.exit(0)
