@@ -60,12 +60,28 @@ def loadArtistas(catalog):
 def listarCronologicamente(catalog, añoInicial, añoFinal):
     listaEnRango = model.listarCronologicamente(catalog, añoInicial, añoFinal)
     return listaEnRango
+  
+def listarAdquisiciones(catalog, fechaInicial, fechaFinal):
+    resultado = model.listarAdquisiciones(catalog, fechaInicial, fechaFinal)
+    return resultado
+
+def clasificar_tecnicas(catalog,nombre):
+    catalog_id = model.catalog_id(catalog,nombre)
+    clasificar_tecnica= model.clasificar_tecnica(catalog,catalog_id)
+    return clasificar_tecnica
+
 
 def obrasAntiguas(catalog, medio, n):
     return model.obrasAntiguas(catalog, medio, n)
 
 def numeroObras(catalog,nacion):
     return model.numeroObras(catalog,nacion)
+ 
+def transportar_obras(catalog,departamento):
+    Obras_transportar,count,peso, Precio, Precio_Total, Precio_Obras = model.transportar_obras(catalog,departamento)
+    Obras_Antiguas, Precio_Antiguas= model.obras_mas_antiguas(Obras_transportar,Precio_Obras)
+    Obras_Caras, IdMasCara= model.obras_mas_Caras(Precio_Obras)
+    return Obras_Antiguas, count, peso, Precio, Precio_Total, Obras_Caras,IdMasCara, Precio_Antiguas
 
 def nacionalidadCreadores(catalog):
     dictnacionalidades,info = model.nacionalidadCreadores(catalog)
