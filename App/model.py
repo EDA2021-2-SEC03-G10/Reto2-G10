@@ -123,6 +123,45 @@ def listarCronologicamente(catalog, añoInicial, añoFinal):
               indice += 1
 
     return mapFinal
+   
+ def listarAdquisiciones(catalog, fechaInical, fechaFinal):
+    mapFecha = mp.newMap(900, maptype='CHAINING',loadfactor=1)
+    compra=0
+    for obra in lt.iterator(catalog['obras']):
+        if (obra["CreditLine"])=="Purchase":
+            compra+=1
+        if (obra["DateAcquired"]) != "":
+            año3,mes3,dia3 =map(int, (obra['DateAcquired']).split('-'))
+            fechaA=(año3,mes3,dia3)
+            if fechaA >= fechaInical and fechaA<= fechaFinal:
+                mp.put(mapFecha,obra["Title"],obra)
+    adquisiciones = mp.newMap(900, maptype='CHAINING',loadfactor=1)
+    indice = 0
+    for i in range(fechaInical[0],fechaFinal[0]):
+        for eso in lt.iterator(mp.valueSet(mapFecha)):
+            if fechaA[0]== i:
+                mp.put(adquisiciones,indice,eso)
+                indice += 1 
+
+    return adquisiciones,compra
+   
+def catalog_id(catalog,nombre):
+    for artista in lt.iterator(catalog["artistas"]):
+        if nombre in artista["DisplayName"]:
+            return artista["ConstituentID"]
+
+def clasificar_tecnica(catalog,map):
+    datos = mp.newMap(4000, maptype='CHAINING', loadfactor=0.5)
+    todo = mp.newMap(4000, maptype='CHAINING', loadfactor=0.5)
+    for obra in lt.iterator(catalog["obras"]):
+        mp.put(datos,obra["ObjectID"],obra)
+        for id in obra["ConstituentID"].split(", "):
+            id = id.replace("[","")
+            id = id.replace("]","")
+            if mp.get(datos,id) != None:
+                if id in map:
+                    mp.put(todo,obra["ObjectID"],obra)
+    return todo
 
 def nacionalidadCreadores(catalog):
     info = mp.newMap(4000, maptype='CHAINING', loadfactor=0.5,)
@@ -183,3 +222,68 @@ def obrasPais(catalog,info,map):
             mp.put(mapFinal,contador,formatoObra)
             contador += 1   
     return mapFinal
+   
+   def transportar_obras(catalog,departamento):
+    count = 0
+    peso = 0
+    Precio_total= 0
+    Precio= 0
+    Fechas_obras= mp.newMap(5000, maptype= "PROBING", loadfactor=0.5)
+    Precio_obras = mp.newMap(5000, maptype='PROBING',loadfactor=0.5)
+    for obra in lt.iterator(catalog["obras"]):
+        Dimension = 1
+        if departamento == (obra["Department"]):
+            mp.put(Fechas_obras,obra["ObjectID"],obra)
+            count += 1
+            
+            if obra["Weight (kg)"] != "":
+                peso += float(obra["Weight (kg)"])
+            if obra["Height (cm)"] != "" and obra["Height (cm)"] != "0":
+                Dimension *= (float(obra["Height (cm)"])/100)         
+            if obra["Width (cm)"] != "" and obra["Width (cm)"] != "0":
+                Dimension *= (float(obra["Width (cm)"])/100)
+            if obra["Depth (cm)"] != "" and obra["Depth (cm)"] != "0":
+                Dimension *= (float(obra["Depth (cm)"])/100) 
+            if  Dimension != 1:
+                Precio= 72*(Dimension)
+            else:
+                Precio= 48
+            Precio_total += Precio
+            mp.put(Precio_obras,obra["ObjectID"],[Precio,obra])
+    return Fechas_obras,count, peso,Precio,Precio_total,Precio_obras
+
+def obras_mas_antiguas(map,map_precios):
+    obraAntigua = None
+    idMasAntiguas = lt.newList()
+    obrasMasAntiguas = lt.newList()
+    Precios_obras= lt.newList("ARRAY_LIST")
+    for i in range(0,5):
+        masAntigua=9999
+        for id in lt.iterator(mp.keySet(map)):
+            valor = mp.get(map,id)["value"]["Date"]
+            if valor != "":
+                if int(valor) < masAntigua and not(lt.isPresent(idMasAntiguas,id)):
+                    masAntigua = int(valor)
+                    obraAntigua = mp.get(map,id)["value"]
+                    idObraAntigua = id
+        lt.addLast(idMasAntiguas,idObraAntigua)
+        lt.addLast(obrasMasAntiguas,obraAntigua)
+        precio_antigua = mp.get(map_precios,idObraAntigua)["value"][0]
+        lt.addLast(Precios_obras,precio_antigua)
+    return obrasMasAntiguas,Precios_obras
+
+def obras_mas_Caras(map):
+    obraCara = None
+    idMasCara = lt.newList("ARRAY_LIST")
+    obrasMasCaras = lt.newList()
+    for i in range(0,5):
+        masCara=0
+        for id in lt.iterator(mp.keySet(map)):
+            valor = mp.get(map,id)["value"][0]
+            if valor > masCara and not(lt.isPresent(idMasCara,valor)):
+                masCara = valor
+                idCara = id
+        lt.addLast(idMasCara,masCara)
+        obraCara = mp.get(map,idCara)["value"][1]
+        lt.addLast(obrasMasCaras,obraCara)
+    return obrasMasCaras,idMasCara
